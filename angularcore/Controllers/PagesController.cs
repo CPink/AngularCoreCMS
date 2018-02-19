@@ -39,5 +39,40 @@ namespace angularcore.Controllers
 
             return Json(page);
         }
+
+        //POST api/pages/create
+        [HttpPost("create")]
+        public IActionResult Create([FromBody] Page page)
+        {
+            page.Slug = page.Title.Replace(" ", "-").ToLower();
+            page.HasSidebar = page.HasSidebar ?? "no";
+
+            var slug = _context.Pages.FirstOrDefault(x => x.Slug == page.Slug);
+            if(slug != null)
+            {
+                return Json("pageExists");
+            }
+            else
+            {
+                _context.Pages.Add(page);
+                _context.SaveChanges();
+
+                return Json("Page added");
+            }
+        }
+
+        //GET api/pages/edit/id
+        [HttpGet("edit/{id}")]
+        public IActionResult Edit(int id)
+        {
+            Page page = _context.Pages.SingleOrDefault(x => x.Id == id);
+
+            if (page == null)
+            {
+                return Json("PageNotFound");
+            }
+
+            return Json(page);
+        }
     }
 }
