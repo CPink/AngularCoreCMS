@@ -11,7 +11,7 @@ namespace angularcore.Controllers
     [Route("api/[controller]")]
     public class PagesController : Controller
     {
-        public readonly CoreCMSApi _context;
+        private readonly CoreCMSApi _context;
 
         public PagesController(CoreCMSApi context)
         {
@@ -73,6 +73,27 @@ namespace angularcore.Controllers
             }
 
             return Json(page);
+        }
+
+        //POST api/pages/edit/id
+        [HttpPut("edit/{id}")]
+        public IActionResult Edit(int id, [FromBody] Page page)
+        {
+            page.Slug = page.Title.Replace(" ", "-").ToLower();
+            page.HasSidebar = page.HasSidebar ?? "no";
+
+            var p = _context.Pages.FirstOrDefault(x => x.Id != id && x.Slug == page.Slug);
+            if (p != null)
+            {
+                return Json("pageExists");
+            }
+            else
+            {
+                _context.Update(page);
+                _context.SaveChanges();
+
+                return Json("ok");
+            }
         }
     }
 }
