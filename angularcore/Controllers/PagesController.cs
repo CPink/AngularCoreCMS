@@ -95,5 +95,16 @@ namespace angularcore.Controllers
                 return Json("ok");
             }
         }
+
+        //DELETE api/pages/delete/id
+        [HttpPut("delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            Page page = _context.Pages.SingleOrDefault(x => x.Id == id);
+            _context.Remove(page);
+            _context.SaveChanges();
+
+            return Json("ok");
+        }
     }
 }
